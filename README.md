@@ -19,6 +19,13 @@ This repo contains example implementations of the [VaultGraph SDK](https://vault
 - [langchain-agent](./langchain-agent): LangChain.js integration using `@vaultgraph/sdk/langchain`.
 - [mcp-server](./mcp-server): MCP server minimal test and Claude Desktop config using `@vaultgraph/mcp-server`.
 
+## MCP tools available in this repo
+
+This workspace includes a VS Code MCP configuration in [`.vscode/mcp.json`](./.vscode/mcp.json). If your editor supports MCP tools, the following servers are available:
+
+- `VaultGraph Docs`: Connects to `https://vaultgraph.com/docs/mcp` so your agent can search and read the VaultGraph documentation directly from the official docs source.
+- `VaultGraph Receipts`: Starts `@vaultgraph/mcp-server` with `npx` and loads credentials from the root `.env` file. This gives agents a local MCP server for submitting VaultGraph JobReceipts from the examples in this repository.
+
 ## Prerequisites
 
 1. Create an account in the [VaultGraph Platform](https://app.vaultgraph.com).

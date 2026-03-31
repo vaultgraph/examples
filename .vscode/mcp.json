@@ -4,7 +4,7 @@
 			"url": "https://vaultgraph.com/docs/mcp",
 			"type": "http"
 		},
-		"VaultGraph Receipts Ingestion": {
+		"VaultGraph Receipts": {
       "command": "npx",
       "args": ["@vaultgraph/mcp-server"],
 			"envFile": "${workspaceFolder}/.env"
