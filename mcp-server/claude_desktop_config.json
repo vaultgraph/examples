@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "vaultgraph": {
+      "command": "npx",
+      "args": [
+        "@vaultgraph/mcp-server"
+      ],
+      "env": {
+        "VAULTGRAPH_API_URL": "https://app.vaultgraph.com",
+        "VAULTGRAPH_API_KEY": "vk_your_api_key_here",
+        "VAULTGRAPH_DEPLOYMENT_ID": "dep_your_deployment_id",
+        "VAULTGRAPH_PRIVATE_KEY": "-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----"
+      }
+    }
+  }
+}

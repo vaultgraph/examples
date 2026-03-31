@@ -1,0 +1,12 @@
+{
+  "name": "vaultgraph-vendor-app-example",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node ./index.js"
+  },
+  "dependencies": {
+    "@vaultgraph/sdk": "^0.4.1",
+    "dotenv": "^17.2.3"
+  }
+}

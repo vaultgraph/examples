@@ -1,0 +1,20 @@
+{
+  "name": "vaultgraph-langchain-agent-example",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "tsx index.ts",
+    "check-types": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@langchain/core": "^0.3.0",
+    "@langchain/openai": "^0.4.0",
+    "@vaultgraph/sdk": "^0.4.1",
+    "dotenv": "^17.2.3",
+    "tsx": "^4.21.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.0.5",
+    "typescript": "^5.9.2"
+  }
+}

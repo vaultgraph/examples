@@ -1,0 +1,14 @@
+{
+	"servers": {
+		"VaultGraph Docs": {
+			"url": "https://vaultgraph.com/docs/mcp",
+			"type": "http"
+		},
+		"VaultGraph Receipts Ingestion": {
+      "command": "npx",
+      "args": ["@vaultgraph/mcp-server"],
+			"envFile": "${workspaceFolder}/.env"
+    }
+	},
+	"inputs": []
+}
