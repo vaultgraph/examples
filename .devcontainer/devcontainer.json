@@ -11,5 +11,7 @@
     }
   },
 
-  "forwardPorts": [3000]
+  "forwardPorts": [3000],
+
+  "runArgs": ["--network=host"]
 }
