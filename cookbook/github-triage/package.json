@@ -11,7 +11,7 @@
     "@langchain/langgraph": "^0.2.74",
     "@langchain/openai": "^0.4.0",
     "@octokit/rest": "^22.0.0",
-    "@vaultgraph/sdk": "^0.4.1",
+    "@vaultgraph/sdk": "^0.4.2",
     "dotenv": "^17.2.3",
     "zod": "^3.25.76"
   },
