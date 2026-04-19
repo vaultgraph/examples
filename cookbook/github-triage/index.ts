@@ -2,7 +2,6 @@ import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
 import { ChatOpenAI } from "@langchain/openai";
-import { createAuditLogCallbackHandler } from "./src/audit.js";
 import { buildDashboardUrl, getRunConfig } from "./src/config.js";
 import {
   buildIssueContext,
@@ -33,13 +32,13 @@ async function main() {
     temperature: 0,
   });
   const triageGraph = createTriageGraph(model);
-  const auditLogHandler = createAuditLogCallbackHandler(config.auditLogPath);
   const vaultGraphHandler = createVaultGraphHandler({
     apiUrl: config.apiUrl,
     apiKey: config.apiKey,
     deploymentId: config.deploymentId,
     privateKey: config.privateKey,
     modelName: config.modelName,
+    auditLogPath: config.auditLogPath,
   });
 
   console.log(`GitHub auth mode: ${authMode}.`);
@@ -66,7 +65,7 @@ async function main() {
       // Each issue gets its own graph run so the resulting VaultGraph receipt stays idempotent.
       const state = await triageGraph.invoke(
         createInitialTriageState(issueContext, availableLabels),
-        { callbacks: [vaultGraphHandler, auditLogHandler] },
+        { callbacks: [vaultGraphHandler] },
       );
       const output = buildReceiptOutput(state);
       const resolution = deriveResolution(output.confidence);

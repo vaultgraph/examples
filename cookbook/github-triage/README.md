@@ -59,9 +59,9 @@ By default, the script also appends one JSON line per issue to `./logs/receipt-a
 - the stable `job_id`
 - the issue reference
 - the derived `context_hash`
-- the exact `hashed_payload` string used to derive that hash
+- the exact `hashed_payload` string emitted by VaultGraph when the receipt is signed
 
-This is useful for internal verification demos where you want to show that a stored local log can reproduce the same hash ingested into the VaultGraph receipt.
+This is useful for internal verification demos where you want to persist the exact normalized payload that VaultGraph hashed locally before the receipt was submitted.
 
 Set `GITHUB_TRIAGE_AUDIT_LOG=off` if you want to disable this behavior.
 
@@ -72,14 +72,14 @@ Set `GITHUB_TRIAGE_AUDIT_LOG=off` if you want to disable this behavior.
 - `src/normalization.ts` - template boilerplate and code fences.
 - `src/llm.ts` - structured model parsing.
 - `src/graph.ts` - LangGraph state machine.
-- `src/audit.ts` - a LangChain callback handler for local receipt-hash audit logs.
+- `src/audit.ts` - local logging for signed receipt context payloads.
 - `src/receipts.ts` - configures the native VaultGraph LangChain callback handler.
 
 ## Notes
 
 - The receipt `job_id` is stable across reruns: `gh-owner-repo-issue-number`.
 - Receipt submission now goes through `VaultGraphCallbackHandler`, not direct `submitSignedReceipt` calls.
-- The SDK derives the receipt `context_hash` from the LangChain output; the cookbook only customizes job ID, metadata, and resolution.
-- The optional audit log mirrors the handler's current hashing rule by storing `JSON.stringify(output).slice(0, 10000)` and its SHA-256 hash.
+- The SDK derives the receipt `context_hash` from the LangChain execution context via `prepareReceiptContext`; the cookbook only customizes job ID, metadata, resolution, and optional audit persistence.
+- The optional audit log is written from `onReceiptSigned(...)` and stores the exact `contextPayload` and `contextHash` emitted by the SDK.
 - GitHub pull requests are filtered out even though the issues API returns them.
 - If any LLM step fails or returns invalid JSON, the script still submits a failed receipt for that issue.

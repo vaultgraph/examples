@@ -2,6 +2,7 @@ import {
   VaultGraphCallbackHandler,
   type VaultGraphLangChainReceiptContext,
 } from "@vaultgraph/sdk/langchain";
+import { createAuditLogCallback } from "./audit.js";
 import { AGENT_VERSION } from "./config.js";
 import type { IssueContext, ReceiptOutput, Resolution } from "./types.js";
 
@@ -59,6 +60,7 @@ export function createVaultGraphHandler(options: {
   deploymentId: string;
   privateKey: string;
   modelName: string;
+  auditLogPath?: string;
 }): VaultGraphCallbackHandler {
   return new VaultGraphCallbackHandler({
     apiUrl: options.apiUrl,
@@ -101,6 +103,7 @@ export function createVaultGraphHandler(options: {
 
       return deriveResolution(toReceiptOutput(output).confidence);
     },
+    onReceiptSigned: createAuditLogCallback(options.auditLogPath),
     onError: (error) => {
       console.error(`VaultGraph error: ${error.message}`);
     },

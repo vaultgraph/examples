@@ -3,7 +3,7 @@ import { dirname, resolve } from "path";
 import { fileURLToPath } from "url";
 import {
   derivePublicKeyPem,
-  hashContext,
+  prepareReceiptContext,
   submitSignedReceipt,
   verifyReceipt,
 } from "@vaultgraph/sdk";
@@ -26,13 +26,15 @@ async function main() {
     );
   }
 
+  const preparedContext = prepareReceiptContext({ transcript: "vendor-app demo" });
+
   const { receipt, signature, response } = await submitSignedReceipt({
     apiUrl: config.apiUrl,
     apiKey: config.apiKey,
     deploymentId: config.deploymentId,
     jobId: config.jobId,
     resolution: "success",
-    contextHash: hashContext({ transcript: "vendor-app demo" }),
+    contextHash: preparedContext.contextHash,
     metadata: {
       source: "vendor-app",
       workflow: "support-ticket-demo",
