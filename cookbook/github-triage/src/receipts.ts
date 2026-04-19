@@ -26,7 +26,7 @@ export function deriveResolution(confidence: number): Resolution {
   return "failed";
 }
 
-function buildIssueJobId(issue: Pick<IssueContext, "owner" | "repo" | "number">): string {
+export function buildIssueJobId(issue: Pick<IssueContext, "owner" | "repo" | "number">): string {
   return `gh-${issue.owner}-${issue.repo}-issue-${issue.number}`;
 }
 

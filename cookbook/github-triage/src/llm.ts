@@ -20,8 +20,8 @@ export const labelSchema = z.object({
 });
 
 export const summarySchema = z.object({
-  summary: z.string().min(1).max(160),
-  nextAction: z.string().min(1).max(200),
+  summary: z.string().min(1).transform((value) => value.slice(0, 160)),
+  nextAction: z.string().min(1).transform((value) => value.slice(0, 200)),
   confidence: z.coerce.number().min(0).max(1).default(0.5),
 });
 

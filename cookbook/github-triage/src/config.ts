@@ -1,9 +1,11 @@
+import path from "node:path";
 import type { TriageRunConfig } from "./types.js";
 
 export const AGENT_VERSION = "1.0.0";
 
 const DEFAULT_MAX_ISSUES = 15;
 const DEFAULT_MODEL = "gpt-4.1-mini";
+const DEFAULT_AUDIT_LOG = path.resolve(process.cwd(), "logs/receipt-audit.jsonl");
 
 function requireEnv(name: string): string {
   const value = process.env[name];
@@ -43,6 +45,18 @@ function parseMaxIssues(rawValue: string | undefined): number {
   return parsed;
 }
 
+function parseAuditLogPath(rawValue: string | undefined): string | undefined {
+  if (!rawValue) {
+    return DEFAULT_AUDIT_LOG;
+  }
+
+  if (["0", "false", "off", "none"].includes(rawValue.toLowerCase())) {
+    return undefined;
+  }
+
+  return path.resolve(process.cwd(), rawValue);
+}
+
 export function getRunConfig(argv: string[] = process.argv): TriageRunConfig {
   const repoSlug = argv[2] ?? process.env["GITHUB_TRIAGE_REPO"];
   const { owner, repo } = parseRepoSlug(repoSlug);
@@ -53,6 +67,7 @@ export function getRunConfig(argv: string[] = process.argv): TriageRunConfig {
     deploymentId: requireEnv("VAULTGRAPH_DEPLOYMENT_ID"),
     privateKey: requireEnv("VAULTGRAPH_PRIVATE_KEY"),
     openAIApiKey: requireEnv("OPENAI_API_KEY"),
+    auditLogPath: parseAuditLogPath(process.env["GITHUB_TRIAGE_AUDIT_LOG"]),
     owner,
     repo,
     maxIssues: parseMaxIssues(argv[3] ?? process.env["GITHUB_TRIAGE_MAX_ISSUES"]),

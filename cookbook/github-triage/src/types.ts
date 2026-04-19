@@ -70,6 +70,7 @@ export type TriageRunConfig = {
   deploymentId: string;
   privateKey: string;
   openAIApiKey: string;
+  auditLogPath?: string;
   owner: string;
   repo: string;
   maxIssues: number;

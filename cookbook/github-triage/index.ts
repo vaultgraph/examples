@@ -2,6 +2,7 @@ import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
 import { ChatOpenAI } from "@langchain/openai";
+import { createAuditLogCallbackHandler } from "./src/audit.js";
 import { buildDashboardUrl, getRunConfig } from "./src/config.js";
 import {
   buildIssueContext,
@@ -14,7 +15,10 @@ import {
   createInitialTriageState,
   createTriageGraph,
 } from "./src/graph.js";
-import { createVaultGraphHandler, deriveResolution } from "./src/receipts.js";
+import {
+  createVaultGraphHandler,
+  deriveResolution,
+} from "./src/receipts.js";
 import type { Resolution } from "./src/types.js";
 
 const exampleDir = path.dirname(fileURLToPath(import.meta.url));
@@ -29,6 +33,7 @@ async function main() {
     temperature: 0,
   });
   const triageGraph = createTriageGraph(model);
+  const auditLogHandler = createAuditLogCallbackHandler(config.auditLogPath);
   const vaultGraphHandler = createVaultGraphHandler({
     apiUrl: config.apiUrl,
     apiKey: config.apiKey,
@@ -61,7 +66,7 @@ async function main() {
       // Each issue gets its own graph run so the resulting VaultGraph receipt stays idempotent.
       const state = await triageGraph.invoke(
         createInitialTriageState(issueContext, availableLabels),
-        { callbacks: [vaultGraphHandler] },
+        { callbacks: [vaultGraphHandler, auditLogHandler] },
       );
       const output = buildReceiptOutput(state);
       const resolution = deriveResolution(output.confidence);
@@ -72,6 +77,7 @@ async function main() {
       );
     } catch (error) {
       const errorReason = error instanceof Error ? error.message : String(error);
+
       counts.failed += 1;
       console.error(`#${issueContext.number} FAILED ${errorReason}`);
     }
