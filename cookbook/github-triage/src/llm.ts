@@ -6,7 +6,6 @@ import type { TokenUsage } from "./types.js";
 export const classificationSchema = z.object({
   category: z.enum(["bug", "feature", "question", "docs", "noise"]),
   rationale: z.string().min(1).default("Model omitted classification rationale."),
-  confidence: z.coerce.number().min(0).max(1).default(0.5),
 });
 
 export const prioritySchema = z.object({
@@ -22,7 +21,6 @@ export const labelSchema = z.object({
 export const summarySchema = z.object({
   summary: z.string().min(1).transform((value) => value.slice(0, 160)),
   nextAction: z.string().min(1).transform((value) => value.slice(0, 200)),
-  confidence: z.coerce.number().min(0).max(1).default(0.5),
 });
 
 function extractMessageText(content: unknown): string {

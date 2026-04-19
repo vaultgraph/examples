@@ -8,7 +8,7 @@ This example uses LangChain and LangGraph to triage GitHub issues and submits on
 - Uses a GitHub token when available, or falls back to unauthenticated requests.
 - Fetches the repo's real label set and newest open issues.
 - Normalizes each issue body, keeps the first 3 comments, and runs a LangGraph triage flow.
-- Classifies the issue, branches by category, optionally scores priority, suggests repo-native labels, writes a short summary, and self-scores confidence.
+- Classifies the issue, branches by category, optionally scores priority, suggests repo-native labels, writes a short summary, and derives confidence from observable issue signals in code.
 - Uses the native VaultGraph LangChain callback handler to submit one receipt per issue run, including failures.
 
 ## Install
@@ -81,5 +81,6 @@ Set `GITHUB_TRIAGE_AUDIT_LOG=off` if you want to disable this behavior.
 - Receipt submission now goes through `VaultGraphCallbackHandler`, not direct `submitSignedReceipt` calls.
 - The SDK derives the receipt `context_hash` from the LangChain execution context via `prepareReceiptContext`; the cookbook only customizes job ID, metadata, resolution, and optional audit persistence.
 - The optional audit log is written from `onReceiptSigned(...)` and stores the exact `contextPayload` and `contextHash` emitted by the SDK.
+- Confidence is derived in code from observable signals such as repro detail, version or environment detail, corroborating comments, and overlap with existing labels.
 - GitHub pull requests are filtered out even though the issues API returns them.
 - If any LLM step fails or returns invalid JSON, the script still submits a failed receipt for that issue.

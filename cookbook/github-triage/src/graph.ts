@@ -85,6 +85,23 @@ function canonicalizeLabels(rawLabels: string[], availableLabels: RepoLabel[]): 
   return unique;
 }
 
+function deriveConfidence(state: TriageState): number {
+  const issueText = `${state.issue.title}\n${state.normalizedBody}`.toLowerCase();
+  const commentText = state.issue.comments.map((comment) => comment.body.toLowerCase()).join("\n");
+  const currentLabels = new Set(state.issue.currentLabels.map((label) => label.toLowerCase()));
+  const labelMatches = state.suggestedLabels.filter((label) => currentLabels.has(label.toLowerCase())).length;
+  const hasReproducer = /steps to reproduce|repro|reproduction|minimal|example code|stack trace|traceback|```/.test(issueText);
+  const hasVersion = /\bversion\b|langgraph-api==|langgraph\s+\d|python\s+\d|node\s+\d|macos|windows|linux/.test(issueText);
+  const commentsAgree = /same issue|same problem|also seeing|also happens|confirmed|can reproduce|reproduced/.test(commentText);
+  const score = 0.35
+    + (hasReproducer ? 0.2 : 0)
+    + (hasVersion ? 0.15 : 0)
+    + (commentsAgree ? 0.1 : 0)
+    + Math.min(labelMatches, 2) * 0.1;
+
+  return Math.max(0.1, Math.min(0.95, Math.round(score * 100) / 100));
+}
+
 export function createInitialTriageState(
   issue: IssueContext,
   availableLabels: RepoLabel[],
@@ -136,7 +153,7 @@ export function createTriageGraph(model: ChatOpenAI) {
       model,
       schema: classificationSchema,
       systemPrompt:
-        "You triage GitHub issues. Return only JSON. Choose exactly one category: bug, feature, question, docs, or noise. Noise means spam, wrong repo, incomprehensible, or chatter.",
+        "You triage GitHub issues. Return only JSON. Choose exactly one category: bug, feature, question, docs, or noise. Noise means spam, wrong repo, incomprehensible, or chatter. Keep the rationale qualitative and grounded in the issue text.",
       userPrompt: [
         "Classify this issue.",
         "",
@@ -148,7 +165,6 @@ export function createTriageGraph(model: ChatOpenAI) {
       classification: result.data,
       tokensIn: state.tokensIn + result.usage.inputTokens,
       tokensOut: state.tokensOut + result.usage.outputTokens,
-      confidence: result.data.confidence,
     };
   };
 
@@ -205,7 +221,7 @@ export function createTriageGraph(model: ChatOpenAI) {
     suggestedLabels: [],
     summary: `Likely ${state.classification?.rationale.toLowerCase() ?? "off-topic issue"}.`,
     nextAction: "No triage action beyond manual confirmation.",
-    confidence: state.classification?.confidence ?? 0.5,
+    confidence: deriveConfidence(state),
   });
 
   const summarizeIssue = async (state: TriageState) => {
@@ -213,7 +229,7 @@ export function createTriageGraph(model: ChatOpenAI) {
       model,
       schema: summarySchema,
       systemPrompt:
-        "You write concise GitHub triage summaries. Return only JSON. The summary must be one line and skimmable. The nextAction must be a short human action, not a paragraph. Confidence must be a number from 0 to 1.",
+        "You write concise GitHub triage summaries. Return only JSON. The summary must be one line and skimmable. The nextAction must be a short human action, not a paragraph.",
       userPrompt: [
         `Category: ${state.classification?.category ?? "unknown"}`,
         `Priority: ${state.priority ?? "n/a"}`,
@@ -227,7 +243,7 @@ export function createTriageGraph(model: ChatOpenAI) {
     return {
       summary: result.data.summary,
       nextAction: result.data.nextAction,
-      confidence: result.data.confidence,
+      confidence: deriveConfidence(state),
       tokensIn: state.tokensIn + result.usage.inputTokens,
       tokensOut: state.tokensOut + result.usage.outputTokens,
     };

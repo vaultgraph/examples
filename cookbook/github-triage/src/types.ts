@@ -31,7 +31,6 @@ export type IssueContext = {
 export type ClassificationResult = {
   category: IssueCategory;
   rationale: string;
-  confidence: number;
 };
 
 export type PriorityResult = {
@@ -47,7 +46,6 @@ export type LabelResult = {
 export type SummaryResult = {
   summary: string;
   nextAction: string;
-  confidence: number;
 };
 
 export type TokenUsage = {
