@@ -22,14 +22,16 @@ npm install
 
 The script loads `../../.env` automatically.
 
-Required:
+### Required
 
 - `VAULTGRAPH_API_KEY`
 - `VAULTGRAPH_DEPLOYMENT_ID`
 - `VAULTGRAPH_PRIVATE_KEY`
 - `OPENAI_API_KEY`
 
-Optional:
+check [VaultGraph setup guide](https://vaultgraph.com/docs/setup) for details on how to get these.
+
+### Optional
 
 - `GITHUB_TOKEN` for authenticated GitHub API access.
 - `TRIAGE_MODEL` to override the default model (`gpt-4.1-mini`).
@@ -50,6 +52,15 @@ npm run start
 ## Output
 
 For each issue, the script prints the derived category, resolution, and summary. At the end it prints a run summary and a deployment dashboard URL in the form `https://app.vaultgraph.com/d/dep_xxx`.
+
+## Structure
+
+- `index.ts` - main flow and orchestration.
+- `src/github.ts` - GitHub API access and issue shaping.
+- `src/normalization.ts` - template boilerplate and code fences.
+- `src/llm.ts` - structured model parsing.
+- `src/graph.ts` - LangGraph state machine.
+- `src/receipts.ts` - builds and submits VaultGraph receipts.
 
 ## Notes
 
