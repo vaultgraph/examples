@@ -1,6 +1,6 @@
 # VaultGraph GitHub Triage Cookbook
 
-This example uses LangChain and LangGraph to triage GitHub issues and submits one VaultGraph receipt per processed issue.
+This example uses LangChain and LangGraph to triage GitHub issues and submits one VaultGraph receipt per processed issue via the native `@vaultgraph/sdk/langchain` callback handler.
 
 ## What it does
 
@@ -9,7 +9,7 @@ This example uses LangChain and LangGraph to triage GitHub issues and submits on
 - Fetches the repo's real label set and newest open issues.
 - Normalizes each issue body, keeps the first 3 comments, and runs a LangGraph triage flow.
 - Classifies the issue, branches by category, optionally scores priority, suggests repo-native labels, writes a short summary, and self-scores confidence.
-- Builds and submits a signed VaultGraph receipt for every issue, including failures.
+- Uses the native VaultGraph LangChain callback handler to submit one receipt per issue run, including failures.
 
 ## Install
 
@@ -60,10 +60,12 @@ For each issue, the script prints the derived category, resolution, and summary.
 - `src/normalization.ts` - template boilerplate and code fences.
 - `src/llm.ts` - structured model parsing.
 - `src/graph.ts` - LangGraph state machine.
-- `src/receipts.ts` - builds and submits VaultGraph receipts.
+- `src/receipts.ts` - configures the native VaultGraph LangChain callback handler.
 
 ## Notes
 
 - The receipt `job_id` is stable across reruns: `gh-owner-repo-issue-number`.
+- Receipt submission now goes through `VaultGraphCallbackHandler`, not direct `submitSignedReceipt` calls.
+- The SDK derives the receipt `context_hash` from the LangChain output; the cookbook only customizes job ID, metadata, and resolution.
 - GitHub pull requests are filtered out even though the issues API returns them.
 - If any LLM step fails or returns invalid JSON, the script still submits a failed receipt for that issue.

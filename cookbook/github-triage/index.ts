@@ -11,12 +11,10 @@ import {
 } from "./src/github.js";
 import {
   buildReceiptOutput,
-  createFailureOutput,
   createInitialTriageState,
   createTriageGraph,
 } from "./src/graph.js";
-import { normalizeIssueBody } from "./src/normalization.js";
-import { submitIssueReceipt } from "./src/receipts.js";
+import { createVaultGraphHandler, deriveResolution } from "./src/receipts.js";
 import type { Resolution } from "./src/types.js";
 
 const exampleDir = path.dirname(fileURLToPath(import.meta.url));
@@ -31,6 +29,13 @@ async function main() {
     temperature: 0,
   });
   const triageGraph = createTriageGraph(model);
+  const vaultGraphHandler = createVaultGraphHandler({
+    apiUrl: config.apiUrl,
+    apiKey: config.apiKey,
+    deploymentId: config.deploymentId,
+    privateKey: config.privateKey,
+    modelName: config.modelName,
+  });
 
   console.log(`GitHub auth mode: ${authMode}.`);
   console.log(
@@ -51,53 +56,23 @@ async function main() {
 
   for (const issue of issues) {
     const issueContext = await buildIssueContext(octokit, config.owner, config.repo, issue);
-    const startedAt = Date.now();
 
     try {
       // Each issue gets its own graph run so the resulting VaultGraph receipt stays idempotent.
       const state = await triageGraph.invoke(
         createInitialTriageState(issueContext, availableLabels),
+        { callbacks: [vaultGraphHandler] },
       );
       const output = buildReceiptOutput(state);
-
-      const resolution = await submitIssueReceipt({
-        apiUrl: config.apiUrl,
-        apiKey: config.apiKey,
-        deploymentId: config.deploymentId,
-        privateKey: config.privateKey,
-        modelName: config.modelName,
-        issue: issueContext,
-        normalizedBody: state.normalizedBody,
-        output,
-        latencyMs: Date.now() - startedAt,
-        tokensIn: state.tokensIn,
-        tokensOut: state.tokensOut,
-      });
+      const resolution = deriveResolution(output.confidence);
 
       counts[resolution] += 1;
       console.log(
         `#${issueContext.number} ${resolution.toUpperCase()} ${output.category} ${output.summary}`,
       );
     } catch (error) {
-      const output = createFailureOutput();
       const errorReason = error instanceof Error ? error.message : String(error);
-
-      const resolution = await submitIssueReceipt({
-        apiUrl: config.apiUrl,
-        apiKey: config.apiKey,
-        deploymentId: config.deploymentId,
-        privateKey: config.privateKey,
-        modelName: config.modelName,
-        issue: issueContext,
-        normalizedBody: normalizeIssueBody(issueContext.body),
-        output,
-        latencyMs: Date.now() - startedAt,
-        tokensIn: 0,
-        tokensOut: 0,
-        errorReason,
-      });
-
-      counts[resolution] += 1;
+      counts.failed += 1;
       console.error(`#${issueContext.number} FAILED ${errorReason}`);
     }
   }
