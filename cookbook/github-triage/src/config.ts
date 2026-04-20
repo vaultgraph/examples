@@ -89,7 +89,3 @@ export function getRunConfig(argv: string[] = process.argv): TriageRunConfig {
     modelName: process.env["TRIAGE_MODEL"] ?? DEFAULT_MODEL,
   };
 }
-
-export function buildDashboardUrl(apiUrl: string, deploymentId: string): string {
-  return `${apiUrl.replace(/\/$/, "")}/d/${deploymentId}`;
-}

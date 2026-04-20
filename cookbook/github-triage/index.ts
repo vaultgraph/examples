@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
 import { ChatOpenAI } from "@langchain/openai";
-import { buildDashboardUrl, getRunConfig } from "./src/config.js";
+import { getRunConfig } from "./src/config.js";
 import {
   buildIssueContext,
   createGitHubClient,
@@ -22,6 +22,18 @@ import type { Resolution } from "./src/types.js";
 
 const exampleDir = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.resolve(exampleDir, "../../.env"), quiet: true });
+
+function formatResolutionIcon(resolution: Resolution): string {
+  if (resolution === "success") {
+    return "✓";
+  }
+
+  if (resolution === "partial") {
+    return "~";
+  }
+
+  return "x";
+}
 
 async function main() {
   const config = getRunConfig();
@@ -75,21 +87,22 @@ async function main() {
       );
       const output = buildReceiptOutput(state);
       const resolution = deriveResolution(output.confidence);
+      const priority = output.priority ?? "n/a";
 
       counts[resolution] += 1;
       console.log(
-        `#${issueContext.number} ${resolution.toUpperCase()} ${output.category} ${(output.confidence * 100).toFixed(0)}% ${output.summary}`,
+        `${formatResolutionIcon(resolution)} issue #${issueContext.number}: ${output.category}/${priority} (confidence ${output.confidence.toFixed(2)})`,
       );
     } catch (error) {
       const errorReason = error instanceof Error ? error.message : String(error);
 
       counts.failed += 1;
-      console.error(`#${issueContext.number} FAILED ${errorReason}`);
+      console.error(`x issue #${issueContext.number}: failed/n/a (confidence 0.00) ${errorReason}`);
     }
   }
 
   console.log(
-    `Processed ${issues.length} issues: ${counts.success} success, ${counts.partial} partial, ${counts.failed} failed. View dashboard: ${buildDashboardUrl(config.apiUrl, config.deploymentId)}`,
+    `Processed ${issues.length} issues: ${counts.success} success, ${counts.partial} partial, ${counts.failed} failed.`,
   );
 }
 
