@@ -45,6 +45,20 @@ function parseMaxIssues(rawValue: string | undefined): number {
   return parsed;
 }
 
+function parseSkipIssues(rawValue: string | undefined): number {
+  if (!rawValue) {
+    return 0;
+  }
+
+  const parsed = Number.parseInt(rawValue, 10);
+
+  if (!Number.isFinite(parsed) || parsed < 0) {
+    throw new Error(`Invalid skip issue count: ${rawValue}`);
+  }
+
+  return parsed;
+}
+
 function parseAuditLogPath(rawValue: string | undefined): string | undefined {
   if (!rawValue) {
     return DEFAULT_AUDIT_LOG;
@@ -71,6 +85,7 @@ export function getRunConfig(argv: string[] = process.argv): TriageRunConfig {
     owner,
     repo,
     maxIssues: parseMaxIssues(argv[3] ?? process.env["GITHUB_TRIAGE_MAX_ISSUES"]),
+    skipIssues: parseSkipIssues(argv[4] ?? process.env["GITHUB_TRIAGE_SKIP_ISSUES"]),
     modelName: process.env["TRIAGE_MODEL"] ?? DEFAULT_MODEL,
   };
 }

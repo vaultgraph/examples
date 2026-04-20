@@ -53,18 +53,20 @@ export async function fetchOpenIssues(
   owner: string,
   repo: string,
   maxIssues: number,
+  skipIssues = 0,
 ): Promise<GitHubIssueListItem[]> {
   const issues: GitHubIssueListItem[] = [];
+  const targetCount = maxIssues + skipIssues;
   let page = 1;
 
-  while (issues.length < maxIssues) {
+  while (issues.length < targetCount) {
     const response = await octokit.rest.issues.listForRepo({
       owner,
       repo,
       state: "open",
       sort: "created",
       direction: "desc",
-      per_page: Math.min(Math.max(maxIssues, 30), 100),
+      per_page: Math.min(Math.max(targetCount, 30), 100),
       page,
     });
 
@@ -79,7 +81,7 @@ export async function fetchOpenIssues(
 
       issues.push(issue);
 
-      if (issues.length >= maxIssues) {
+      if (issues.length >= targetCount) {
         break;
       }
     }
@@ -87,7 +89,7 @@ export async function fetchOpenIssues(
     page += 1;
   }
 
-  return issues.slice(0, maxIssues);
+  return issues.slice(skipIssues, skipIssues + maxIssues);
 }
 
 // Build one normalized payload per issue so the graph receives a stable input shape.

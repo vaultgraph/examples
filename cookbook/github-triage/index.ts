@@ -43,12 +43,18 @@ async function main() {
 
   console.log(`GitHub auth mode: ${authMode}.`);
   console.log(
-    `Fetching labels and up to ${config.maxIssues} open issues from ${config.owner}/${config.repo}.`,
+    `Fetching labels and up to ${config.maxIssues} open issues from ${config.owner}/${config.repo} after skipping ${config.skipIssues}.`,
   );
 
   // Load repo-level context first so every issue can reuse the same label catalog.
   const availableLabels = await fetchRepoLabels(octokit, config.owner, config.repo);
-  const issues = await fetchOpenIssues(octokit, config.owner, config.repo, config.maxIssues);
+  const issues = await fetchOpenIssues(
+    octokit,
+    config.owner,
+    config.repo,
+    config.maxIssues,
+    config.skipIssues,
+  );
 
   console.log(`Loaded ${availableLabels.length} labels and ${issues.length} issues for triage.`);
 
@@ -72,7 +78,7 @@ async function main() {
 
       counts[resolution] += 1;
       console.log(
-        `#${issueContext.number} ${resolution.toUpperCase()} ${output.category} ${output.summary}`,
+        `#${issueContext.number} ${resolution.toUpperCase()} ${output.category} ${(output.confidence * 100).toFixed(0)}% ${output.summary}`,
       );
     } catch (error) {
       const errorReason = error instanceof Error ? error.message : String(error);

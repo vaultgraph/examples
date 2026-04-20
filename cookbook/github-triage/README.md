@@ -4,7 +4,7 @@ This example uses LangChain and LangGraph to triage GitHub issues and submits on
 
 ## What it does
 
-- Takes a repo slug and a max issue count.
+- Takes a repo slug, a max issue count, and an optional skip count.
 - Uses a GitHub token when available, or falls back to unauthenticated requests.
 - Fetches the repo's real label set and newest open issues.
 - Normalizes each issue body, keeps the first 3 comments, and runs a LangGraph triage flow.
@@ -29,13 +29,13 @@ The script loads `../../.env` automatically.
 - `VAULTGRAPH_PRIVATE_KEY`
 - `OPENAI_API_KEY`
 
-check [VaultGraph setup guide](https://vaultgraph.com/docs/setup) for details on how to get these.
+See [VaultGraph setup guide](https://vaultgraph.com/docs/setup) for details on how to get these.
 
 ### Optional
 
 - `GITHUB_TOKEN` for authenticated GitHub API access.
 - `TRIAGE_MODEL` to override the default model (`gpt-4.1-mini`).
-- `GITHUB_TRIAGE_REPO` and `GITHUB_TRIAGE_MAX_ISSUES` if you do not want to pass CLI args.
+- `GITHUB_TRIAGE_REPO`, `GITHUB_TRIAGE_MAX_ISSUES`, and `GITHUB_TRIAGE_SKIP_ISSUES` if you do not want to pass CLI args.
 - `GITHUB_TRIAGE_AUDIT_LOG` to override the audit log path, or set it to `off` to disable audit logging.
 
 ## Run
@@ -44,7 +44,13 @@ check [VaultGraph setup guide](https://vaultgraph.com/docs/setup) for details on
 npm run start -- owner/repo 15
 ```
 
-You can also set `GITHUB_TRIAGE_REPO` and `GITHUB_TRIAGE_MAX_ISSUES` in `.env` and run:
+To skip the newest issues and run against a later subset:
+
+```bash
+npm run start -- owner/repo 15 30
+```
+
+You can also set `GITHUB_TRIAGE_REPO`, `GITHUB_TRIAGE_MAX_ISSUES`, and optionally `GITHUB_TRIAGE_SKIP_ISSUES` in `.env` and run:
 
 ```bash
 npm run start
@@ -52,7 +58,7 @@ npm run start
 
 ## Output
 
-For each issue, the script prints the derived category, resolution, and summary. At the end it prints a run summary and a deployment dashboard URL in the form `https://app.vaultgraph.com/d/dep_xxx`.
+For each issue, the script prints the derived category, resolution, confidence, and summary. At the end it prints a run summary and a deployment dashboard URL in the form `https://app.vaultgraph.com/d/dep_xxx`.
 
 By default, the script also appends one JSON line per issue to `./logs/receipt-audit.jsonl` with:
 

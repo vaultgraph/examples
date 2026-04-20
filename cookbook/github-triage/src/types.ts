@@ -72,5 +72,6 @@ export type TriageRunConfig = {
   owner: string;
   repo: string;
   maxIssues: number;
+  skipIssues: number;
   modelName: string;
 };
