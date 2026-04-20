@@ -102,7 +102,7 @@ async function main() {
   }
 
   console.log(
-    `Processed ${issues.length} issues: ${counts.success} success, ${counts.partial} partial, ${counts.failed} failed.`,
+    `Processed ${issues.length} issues: ${counts.success} success, ${counts.partial} partial, ${counts.failed} failed. Deployment ID: ${config.deploymentId} - ${config.apiUrl}`,
   );
 }
 

@@ -58,7 +58,7 @@ npm run start
 
 ## Output
 
-For each issue, the script prints the derived category, resolution, confidence, and summary. At the end it prints a run summary and a deployment dashboard URL in the form `https://app.vaultgraph.com/d/dep_xxx`.
+For each issue, the script prints a compact status line such as `✓ issue #7548: bug/medium (confidence 0.70)`, showing the derived receipt resolution, category, priority, and confidence. At the end it prints a run summary with success, partial, and failed counts plus the configured deployment ID and API URL.
 
 By default, the script also appends one JSON line per issue to `./logs/receipt-audit.jsonl` with:
 
