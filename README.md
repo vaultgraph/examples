@@ -17,6 +17,7 @@ This repo contains example implementations of the [VaultGraph SDK](https://vault
 - [vendor-app](./vendor-app): Minimal direct SDK flow that signs, verifies, and submits a receipt.
 - [ai-sdk-agent](./ai-sdk-agent): Vercel AI SDK integration using `@vaultgraph/sdk/ai`.
 - [langchain-agent](./langchain-agent): LangChain.js integration using `@vaultgraph/sdk/langchain`.
+- [cookbook/github-triage](./cookbook/github-triage): LangChain + LangGraph issue triage agent that submits one receipt per GitHub issue.
 - [mcp-server](./mcp-server): MCP server minimal test and Claude Desktop config using `@vaultgraph/mcp-server`.
 
 ## MCP tools available in this repo

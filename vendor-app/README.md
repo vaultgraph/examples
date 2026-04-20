@@ -2,7 +2,7 @@
 
 This is the smallest direct integration example for `@vaultgraph/sdk`.
 
-It creates a signed receipt, verifies that signature locally, and then submits the receipt to VaultGraph.
+It prepares receipt context locally, creates a signed receipt, verifies that signature locally, and then submits the receipt to VaultGraph.
 
 ## Install
 
