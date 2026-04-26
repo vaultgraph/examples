@@ -65,7 +65,7 @@ By default, the script also appends one JSON line per issue to `./logs/receipt-a
 - the stable `job_id`
 - the issue reference
 - the derived `context_hash`
-- the exact `hashed_payload` string emitted by VaultGraph when the receipt is signed
+- the exact `context_payload` string emitted by VaultGraph when the receipt is signed
 
 This is useful for internal verification demos where you want to persist the exact normalized payload that VaultGraph hashed locally before the receipt was submitted.
 
@@ -74,6 +74,7 @@ Set `GITHUB_TRIAGE_AUDIT_LOG=off` if you want to disable this behavior.
 ## Structure
 
 - `index.ts` - main flow and orchestration.
+- `graph.png` - visual of the LangGraph state machine.
 - `src/github.ts` - GitHub API access and issue shaping.
 - `src/normalization.ts` - template boilerplate and code fences.
 - `src/llm.ts` - structured model parsing.

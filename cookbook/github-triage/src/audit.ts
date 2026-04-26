@@ -43,7 +43,7 @@ async function appendAuditLog(
     event: event.executionContext.event,
     run_id: event.executionContext.runId,
     context_hash: event.contextHash,
-    hashed_payload: event.contextPayload,
+    context_payload: event.contextPayload,
     ...(errorReason ? { error_reason: errorReason } : {}),
   });
 
