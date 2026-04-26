@@ -1,0 +1,51 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Verify triage receipt hash",
+      "type": "shell",
+      "command": "npm run verify -- ${input:verifyHash}",
+      "options": {
+        "cwd": "${workspaceFolder}/cookbook/github-triage"
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Start GitHub triage",
+      "type": "shell",
+      "command": "npm run start -- ${input:triageRepo} ${input:triageCount}",
+      "options": {
+        "cwd": "${workspaceFolder}/cookbook/github-triage"
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    }
+  ],
+  "inputs": [
+    {
+      "id": "verifyHash",
+      "type": "promptString",
+      "description": "Enter the receipt context_hash to verify",
+      "password": false
+    },
+    {
+      "id": "triageRepo",
+      "type": "promptString",
+      "description": "Enter the repo to triage",
+      "default": "langchain-ai/langgraph"
+    },
+    {
+      "id": "triageCount",
+      "type": "promptString",
+      "description": "Enter the number of items to triage",
+      "default": "10"
+    }
+  ]
+}

@@ -7,6 +7,7 @@
   },
   "scripts": {
     "start": "tsx index.ts",
+    "verify": "tsx verify.ts",
     "check-types": "tsc --noEmit"
   },
   "dependencies": {

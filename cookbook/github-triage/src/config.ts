@@ -71,6 +71,10 @@ function parseAuditLogPath(rawValue: string | undefined): string | undefined {
   return path.resolve(process.cwd(), rawValue);
 }
 
+export function resolveAuditLogPath(rawValue = process.env["GITHUB_TRIAGE_AUDIT_LOG"]): string {
+  return parseAuditLogPath(rawValue) ?? DEFAULT_AUDIT_LOG;
+}
+
 export function getRunConfig(argv: string[] = process.argv): TriageRunConfig {
   const repoSlug = argv[2] ?? process.env["GITHUB_TRIAGE_REPO"];
   const { owner, repo } = parseRepoSlug(repoSlug);

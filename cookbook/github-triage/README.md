@@ -56,6 +56,14 @@ You can also set `GITHUB_TRIAGE_REPO`, `GITHUB_TRIAGE_MAX_ISSUES`, and optionall
 npm run start
 ```
 
+To verify that a stored audit entry still hashes to the recorded `context_hash`:
+
+```bash
+npm run verify -- <sha256>
+```
+
+The verifier reads `./logs/receipt-audit.jsonl` by default, finds the row whose `context_hash` matches the argument, hashes that row's `context_payload`. Set `GITHUB_TRIAGE_AUDIT_LOG` to point at a different JSONL file if needed.
+
 ## Output
 
 For each issue, the script prints a compact status line such as `✓ issue #7548: bug/medium (confidence 0.70)`, showing the derived receipt resolution, category, priority, and confidence. At the end it prints a run summary with success, partial, and failed counts plus the configured deployment ID and API URL.
